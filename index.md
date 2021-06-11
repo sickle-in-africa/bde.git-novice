@@ -43,9 +43,24 @@ as well.  And it isn't just for software: books,
 papers, small data sets, and anything that changes over time or needs
 to be shared can and should be stored in a version control system.
 
+> ## Learner experience survey
+> On completion of the module, *please* complete this survey:
+>
+> <div align="center"><a href="https://protect-za.mimecast.com/s/BRYGCZ4GJ0iq3vNmUzad87">Learners experience survey link</a></div>
+>
+> Your feedback will be invaluable to developing the module for future learners!
+{: .callout}
+
 > ## Prerequisites
 >
 > In this lesson we use Git from the Unix Shell.
 > Some previous experience with the shell is expected,
 > *but isn't mandatory*.
 {: .prereq}
+
+## Acknowledgements
+We acknowledge the financial support from the [National Heart, Lung, and Blood Institute](https://www.nhlbi.nih.gov/) of the [National Institutes of Health](https://www.nih.gov/) who funds SickleInAfrica. The views and content expressed on this website do not necessarily reflect the views and opinions of our funders. 
+
+The content of this module was initially developed by the SADaCC team for SickleInAfrica.  
+
+We extend our gratitude to the [Software Carpentry project](https://software-carpentry.org/) who built the website template used by this module and wrote the content. 

@@ -1,0 +1,272 @@
+I"7<p>What if we have files that we do not want Git to track for us,
+like backup files created by our editor
+or intermediate files created during data analysis?
+Let’s create a few dummy files:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">mkdir </span>results
+<span class="nv">$ </span><span class="nb">touch </span>a.dat b.dat c.dat results/a.out results/b.out
+</code></pre></div></div>
+
+<p>and see what Git says:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git status
+</code></pre></div></div>
+
+<div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>On branch master
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+
+	a.dat
+	b.dat
+	c.dat
+	results/
+
+nothing added to commit but untracked files present (use "git add" to track)
+</code></pre></div></div>
+
+<p>Putting these files under version control would be a waste of disk space.
+What’s worse,
+having them all listed could distract us from changes that actually matter,
+so let’s tell Git to ignore them.</p>
+
+<p>We do this by creating a file in the root directory of our project called <code class="language-plaintext highlighter-rouge">.gitignore</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nano .gitignore
+<span class="nv">$ </span><span class="nb">cat</span> .gitignore
+</code></pre></div></div>
+
+<div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*.dat
+results/
+</code></pre></div></div>
+
+<p>These patterns tell Git to ignore any file whose name ends in <code class="language-plaintext highlighter-rouge">.dat</code>
+and everything in the <code class="language-plaintext highlighter-rouge">results</code> directory.
+(If any of these files were already being tracked,
+Git would continue to track them.)</p>
+
+<p>Once we have created this file,
+the output of <code class="language-plaintext highlighter-rouge">git status</code> is much cleaner:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git status
+</code></pre></div></div>
+
+<div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>On branch master
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+
+	.gitignore
+
+nothing added to commit but untracked files present (use "git add" to track)
+</code></pre></div></div>
+
+<p>The only thing Git notices now is the newly-created <code class="language-plaintext highlighter-rouge">.gitignore</code> file.
+You might think we wouldn’t want to track it,
+but everyone we’re sharing our repository with will probably want to ignore
+the same things that we’re ignoring.
+Let’s add and commit <code class="language-plaintext highlighter-rouge">.gitignore</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git add .gitignore
+<span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"Ignore data files and the results folder."</span>
+<span class="nv">$ </span>git status
+</code></pre></div></div>
+
+<div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>On branch master
+nothing to commit, working directory clean
+</code></pre></div></div>
+
+<p>As a bonus, using <code class="language-plaintext highlighter-rouge">.gitignore</code> helps us avoid accidentally adding to the repository files that we don’t want to track:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git add a.dat
+</code></pre></div></div>
+
+<div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The following paths are ignored by one of your .gitignore files:
+a.dat
+Use -f if you really want to add them.
+</code></pre></div></div>
+
+<p>If we really want to override our ignore settings,
+we can use <code class="language-plaintext highlighter-rouge">git add -f</code> to force Git to add something. For example,
+<code class="language-plaintext highlighter-rouge">git add -f a.dat</code>.
+We can also always see the status of ignored files if we want:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git status <span class="nt">--ignored</span>
+</code></pre></div></div>
+
+<div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>On branch master
+Ignored files:
+ (use "git add -f &lt;file&gt;..." to include in what will be committed)
+
+        a.dat
+        b.dat
+        c.dat
+        results/
+
+nothing to commit, working directory clean
+</code></pre></div></div>
+
+<blockquote class="challenge">
+  <h2 id="ignoring-nested-files">Ignoring Nested Files</h2>
+
+  <p>Given a directory structure that looks like:</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>results/data
+results/plots
+</code></pre></div>  </div>
+
+  <p>How would you ignore only <code class="language-plaintext highlighter-rouge">results/plots</code> and not <code class="language-plaintext highlighter-rouge">results/data</code>?</p>
+
+  <blockquote class="solution">
+    <h2 id="solution">Solution</h2>
+
+    <p>If you only want to ignore the contents of
+<code class="language-plaintext highlighter-rouge">results/plots</code>, you can change your <code class="language-plaintext highlighter-rouge">.gitignore</code> to ignore
+only the <code class="language-plaintext highlighter-rouge">/plots/</code> subfolder by adding the following line to
+your .gitignore:</p>
+
+    <div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>results/plots/
+</code></pre></div>    </div>
+
+    <p>This line will ensure only the contents of <code class="language-plaintext highlighter-rouge">results/plots</code> is ignored, and
+not the contents of <code class="language-plaintext highlighter-rouge">results/data</code>.</p>
+
+    <p>As with most programming issues, there
+are a few alternative ways that one may ensure this ignore rule is followed.
+The “Ignoring Nested Files: Variation” exercise has a slightly
+different directory structure
+that presents an alternative solution.
+Further, the discussion page has more detail on ignore rules.</p>
+  </blockquote>
+</blockquote>
+
+<blockquote class="challenge">
+  <h2 id="including-specific-files">Including Specific Files</h2>
+
+  <p>How would you ignore all <code class="language-plaintext highlighter-rouge">.dat</code> files in your root directory except for
+<code class="language-plaintext highlighter-rouge">final.dat</code>?
+Hint: Find out what <code class="language-plaintext highlighter-rouge">!</code> (the exclamation point operator) does</p>
+
+  <blockquote class="solution">
+    <h2 id="solution-1">Solution</h2>
+
+    <p>You would add the following two lines to your .gitignore:</p>
+
+    <div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*.dat           # ignore all data files
+!final.dat      # except final.data
+</code></pre></div>    </div>
+
+    <p>The exclamation point operator will include a previously excluded entry.</p>
+
+    <p>Note also that because you’ve previously committed <code class="language-plaintext highlighter-rouge">.dat</code> files in this
+lesson they will not be ignored with this new rule. Only future additions
+of <code class="language-plaintext highlighter-rouge">.dat</code> files added to the root directory will be ignored.</p>
+  </blockquote>
+</blockquote>
+
+<blockquote class="challenge">
+  <h2 id="ignoring-nested-files-variation">Ignoring Nested Files: Variation</h2>
+
+  <p>Given a directory structure that looks similar to the earlier Nested Files
+exercise, but with a slightly different directory structure:</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>results/data
+results/images
+results/plots
+results/analysis
+</code></pre></div>  </div>
+
+  <p>How would you ignore all of the contents in the results folder, but not <code class="language-plaintext highlighter-rouge">results/data</code>?</p>
+
+  <p>Hint: think a bit about how you created an exception with the <code class="language-plaintext highlighter-rouge">!</code> operator
+before.</p>
+
+  <blockquote class="solution">
+    <h2 id="solution-2">Solution</h2>
+
+    <p>If you want to ignore the contents of
+<code class="language-plaintext highlighter-rouge">results/</code> but not those of <code class="language-plaintext highlighter-rouge">results/data/</code>, you can change your <code class="language-plaintext highlighter-rouge">.gitignore</code> to ignore
+the contents of results folder, but create an exception for the contents of the
+<code class="language-plaintext highlighter-rouge">results/data</code> subfolder. Your .gitignore would look like this:</p>
+
+    <div class="language-plaintext output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>results/*               # ignore everything in results folder
+!results/data/          # do not ignore results/data/ contents
+</code></pre></div>    </div>
+
+  </blockquote>
+</blockquote>
+
+<blockquote class="challenge">
+  <h2 id="ignoring-all-data-files-in-a-directory">Ignoring all data Files in a Directory</h2>
+
+  <p>Assuming you have an empty .gitignore file, and given a directory structure that looks like:</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>results/data/position/gps/a.dat
+results/data/position/gps/b.dat
+results/data/position/gps/c.dat
+results/data/position/gps/info.txt
+results/plots
+</code></pre></div>  </div>
+
+  <p>What’s the shortest <code class="language-plaintext highlighter-rouge">.gitignore</code> rule you could write to ignore all <code class="language-plaintext highlighter-rouge">.dat</code>
+files in <code class="language-plaintext highlighter-rouge">result/data/position/gps</code>? Do not ignore the <code class="language-plaintext highlighter-rouge">info.txt</code>.</p>
+
+  <blockquote class="solution">
+    <h2 id="solution-3">Solution</h2>
+
+    <p>Appending <code class="language-plaintext highlighter-rouge">results/data/position/gps/*.dat</code> will match every file in <code class="language-plaintext highlighter-rouge">results/data/position/gps</code>
+that ends with <code class="language-plaintext highlighter-rouge">.dat</code>.
+The file <code class="language-plaintext highlighter-rouge">results/data/position/gps/info.txt</code> will not be ignored.</p>
+  </blockquote>
+</blockquote>
+
+<blockquote class="challenge">
+  <h2 id="the-order-of-rules">The Order of Rules</h2>
+
+  <p>Given a <code class="language-plaintext highlighter-rouge">.gitignore</code> file with the following contents:</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>.dat
+<span class="o">!</span><span class="k">*</span>.dat
+</code></pre></div>  </div>
+
+  <p>What will be the result?</p>
+
+  <blockquote class="solution">
+    <h2 id="solution-4">Solution</h2>
+
+    <p>The <code class="language-plaintext highlighter-rouge">!</code> modifier will negate an entry from a previously defined ignore pattern.
+Because the <code class="language-plaintext highlighter-rouge">!*.dat</code> entry negates all of the previous <code class="language-plaintext highlighter-rouge">.dat</code> files in the <code class="language-plaintext highlighter-rouge">.gitignore</code>,
+none of them will be ignored, and all <code class="language-plaintext highlighter-rouge">.dat</code> files will be tracked.</p>
+
+  </blockquote>
+</blockquote>
+
+<blockquote class="challenge">
+  <h2 id="log-files">Log Files</h2>
+
+  <p>You wrote a script that creates many intermediate log-files of the form <code class="language-plaintext highlighter-rouge">log_01</code>, <code class="language-plaintext highlighter-rouge">log_02</code>, <code class="language-plaintext highlighter-rouge">log_03</code>, etc.
+You want to keep them but you do not want to track them through <code class="language-plaintext highlighter-rouge">git</code>.</p>
+
+  <ol>
+    <li>
+      <p>Write <strong>one</strong> <code class="language-plaintext highlighter-rouge">.gitignore</code> entry that excludes files of the form <code class="language-plaintext highlighter-rouge">log_01</code>, <code class="language-plaintext highlighter-rouge">log_02</code>, etc.</p>
+    </li>
+    <li>
+      <p>Test your “ignore pattern” by creating some dummy files of the form <code class="language-plaintext highlighter-rouge">log_01</code>, etc.</p>
+    </li>
+    <li>
+      <p>You find that the file <code class="language-plaintext highlighter-rouge">log_01</code> is very important after all, add it to the tracked files without changing the <code class="language-plaintext highlighter-rouge">.gitignore</code> again.</p>
+    </li>
+    <li>
+      <p>Discuss with your neighbor what other types of files could reside in your directory that you do not want to track and thus would exclude via <code class="language-plaintext highlighter-rouge">.gitignore</code>.</p>
+    </li>
+  </ol>
+
+  <blockquote class="solution">
+    <h2 id="solution-5">Solution</h2>
+
+    <ol>
+      <li>append either <code class="language-plaintext highlighter-rouge">log_*</code>  or  <code class="language-plaintext highlighter-rouge">log*</code>  as a new entry in your .gitignore</li>
+      <li>track <code class="language-plaintext highlighter-rouge">log_01</code> using   <code class="language-plaintext highlighter-rouge">git add -f log_01</code></li>
+    </ol>
+  </blockquote>
+</blockquote>
+:ET
